@@ -1,0 +1,36 @@
+{
+  "name": "polymarket-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "poly": "./src/cli/index.ts",
+    "dex": "./src/cli/dex.ts"
+  },
+  "scripts": {
+    "dev": "tsx src/test.ts",
+    "poly": "tsx src/cli/index.ts",
+    "dex": "tsx src/cli/dex.ts",
+    "server": "tsx src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@types/ws": "^8.18.1",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.19.0",
+    "zod": "^4.3.6"
+  }
+}
