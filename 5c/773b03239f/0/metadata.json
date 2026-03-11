@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.0",
+  "checkpoint_id": "5c773b03239f",
+  "session_id": "e719e376-ccea-43a9-b065-e10fdc9a7a8c",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-11T08:17:32.3567Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".opencode/plugins/entire.ts",
+    ".claude/settings.json",
+    ".cursor/hooks.json",
+    ".entire/.gitignore",
+    ".entire/settings.json"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "2b6b1219021b",
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 7239,
+    "cache_read_tokens": 33450,
+    "output_tokens": 291,
+    "api_call_count": 3
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-11T08:17:32.328568Z",
+    "agent_lines": 290,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 290,
+    "agent_percentage": 100
+  }
+}

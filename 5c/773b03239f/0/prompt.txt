@@ -1,0 +1,6 @@
+<ide_opened_file>The user opened the file /Users/vandao2k/Documents/wm-prediction/package.json in the IDE. This may or may not be related to the current task.</ide_opened_file>
+push code lên với commit "initial entire"
+
+---
+
+tất cả đi
