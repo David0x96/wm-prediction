@@ -10,6 +10,17 @@ import * as getWhales from './skills/get_whales.js';
 import * as searchMarkets from './skills/search_markets.js';
 import * as alert from './skills/alert.js';
 import * as dexHot from './skills/dex_hot.js';
+import * as geckoTrending from './skills/gecko_trending.js';
+import * as walletInfo from './skills/wallet_info.js';
+import * as polySetup from './skills/poly_setup.js';
+import * as polyBet from './skills/poly_bet.js';
+import * as polyOrders from './skills/poly_orders.js';
+import * as dexSwap from './skills/dex_swap.js';
+import * as polyPortfolio from './skills/poly_portfolio.js';
+import * as polyApprove from './skills/poly_approve.js';
+import * as walletCreate from './skills/wallet_create.js';
+import * as walletFromMnemonic from './skills/wallet_from_mnemonic.js';
+import * as walletSave from './skills/wallet_save.js';
 
 const server = new McpServer({
   name: 'polymarket-mcp',
@@ -136,6 +147,127 @@ server.tool(
   dexHot.schema.shape,
   async (input) => {
     const result = await dexHot.run(dexHot.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: wallet_create ──────────────────────────────────────────────────────
+server.tool(
+  'wallet_create',
+  'Tạo ví EVM mới với seed phrase (BIP39) và private key. Trả về address, mnemonic, private key. Dùng wallet_save để lưu vào .env.',
+  walletCreate.schema.shape,
+  async (input) => {
+    const result = await walletCreate.run(walletCreate.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: wallet_from_mnemonic ───────────────────────────────────────────────
+server.tool(
+  'wallet_from_mnemonic',
+  'Import ví từ seed phrase (12 hoặc 24 từ). Trả về address và private key. Hỗ trợ chọn account index để lấy ví phụ.',
+  walletFromMnemonic.schema.shape,
+  async (input) => {
+    const result = await walletFromMnemonic.run(walletFromMnemonic.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: wallet_save ────────────────────────────────────────────────────────
+server.tool(
+  'wallet_save',
+  'Lưu private key vào file .env tự động. Ghi đè PRIVATE_KEY cũ nếu đã có.',
+  walletSave.schema.shape,
+  async (input) => {
+    const result = await walletSave.run(walletSave.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: wallet_info ────────────────────────────────────────────────────────
+server.tool(
+  'wallet_info',
+  'Xem địa chỉ ví và balance (native token + USDC) trên chain được chọn. Cần PRIVATE_KEY trong .env.',
+  walletInfo.schema.shape,
+  async (input) => {
+    const result = await walletInfo.run(walletInfo.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: poly_setup ─────────────────────────────────────────────────────────
+server.tool(
+  'poly_setup',
+  'Tạo Polymarket API key từ ví (chạy 1 lần). Cần PRIVATE_KEY trong .env. Trả về key/secret/passphrase để lưu vào .env.',
+  polySetup.schema.shape,
+  async (input) => {
+    const result = await polySetup.run(polySetup.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: poly_bet ───────────────────────────────────────────────────────────
+server.tool(
+  'poly_bet',
+  'Đặt lệnh mua/bán trên Polymarket. Cần PRIVATE_KEY + POLY_API_KEY/SECRET/PASSPHRASE trong .env.',
+  polyBet.schema.shape,
+  async (input) => {
+    const result = await polyBet.run(polyBet.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: poly_orders ────────────────────────────────────────────────────────
+server.tool(
+  'poly_orders',
+  'Quản lý lệnh Polymarket: xem lệnh đang mở, hủy 1 lệnh, hoặc hủy tất cả. Cần API credentials trong .env.',
+  polyOrders.schema.shape,
+  async (input) => {
+    const result = await polyOrders.run(polyOrders.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: get_gecko_trending ─────────────────────────────────────────────────
+server.tool(
+  'get_gecko_trending',
+  'Lấy top trending pools organic trên GeckoTerminal (dựa trên volume + transaction thực, không phải paid boost). Filter theo network, sort theo trending hoặc volume 24h.',
+  geckoTrending.schema.shape,
+  async (input) => {
+    const result = await geckoTrending.run(geckoTrending.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: dex_swap ───────────────────────────────────────────────────────────
+server.tool(
+  'dex_swap',
+  'Swap token trên DEX (QuickSwap/Uniswap V2/PancakeSwap/BaseSwap/SushiSwap). Cần PRIVATE_KEY trong .env. Dùng "NATIVE" cho native token (ETH/MATIC/BNB), "USDC" cho stablecoin.',
+  dexSwap.schema.shape,
+  async (input) => {
+    const result = await dexSwap.run(dexSwap.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: poly_portfolio ─────────────────────────────────────────────────────
+server.tool(
+  'poly_portfolio',
+  'Xem positions hiện tại và PnL trên Polymarket. Có thể xem của bất kỳ địa chỉ ví nào, hoặc mặc định dùng ví trong .env.',
+  polyPortfolio.schema.shape,
+  async (input) => {
+    const result = await polyPortfolio.run(polyPortfolio.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: poly_approve ───────────────────────────────────────────────────────
+server.tool(
+  'poly_approve',
+  'Check hoặc approve USDC cho Polymarket CTF Exchange contracts. Bắt buộc phải approve trước khi đặt lệnh lần đầu.',
+  polyApprove.schema.shape,
+  async (input) => {
+    const result = await polyApprove.run(polyApprove.schema.parse(input));
     return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
   }
 );

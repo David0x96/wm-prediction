@@ -159,6 +159,65 @@ export interface Pagination {
   count: number;
 }
 
+// ─── GeckoTerminal Types ──────────────────────────────────────────────────────
+
+export interface GeckoPool {
+  id: string;                     // e.g. "solana_So11..."
+  type: string;                   // "pool"
+  attributes: {
+    name: string;                 // e.g. "WIF / SOL"
+    address: string;
+    base_token_price_usd: string;
+    quote_token_price_usd: string;
+    base_token_price_native_currency: string;
+    price_change_percentage: {
+      m5?: string;
+      h1?: string;
+      h6?: string;
+      h24?: string;
+    };
+    transactions: {
+      m5?: { buys: number; sells: number; buyers: number; sellers: number };
+      h1?: { buys: number; sells: number; buyers: number; sellers: number };
+      h6?: { buys: number; sells: number; buyers: number; sellers: number };
+      h24?: { buys: number; sells: number; buyers: number; sellers: number };
+    };
+    volume_usd: {
+      m5?: string;
+      h1?: string;
+      h6?: string;
+      h24?: string;
+    };
+    reserve_in_usd: string;       // liquidity
+    fdv_usd?: string;
+    market_cap_usd?: string;
+    pool_created_at?: string;
+  };
+  relationships: {
+    base_token: { data: { id: string; type: string } };
+    quote_token: { data: { id: string; type: string } };
+    dex: { data: { id: string; type: string } };
+    network: { data: { id: string; type: string } };
+  };
+}
+
+export interface GeckoToken {
+  id: string;
+  type: string;
+  attributes: {
+    address: string;
+    name: string;
+    symbol: string;
+    image_url?: string;
+    coingecko_coin_id?: string;
+  };
+}
+
+export interface GeckoPoolsResponse {
+  data: GeckoPool[];
+  included?: GeckoToken[];
+}
+
 // ─── DexScreener Types ────────────────────────────────────────────────────────
 
 export interface DexBoostToken {
