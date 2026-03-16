@@ -21,6 +21,7 @@ import * as polyApprove from './skills/poly_approve.js';
 import * as walletCreate from './skills/wallet_create.js';
 import * as walletFromMnemonic from './skills/wallet_from_mnemonic.js';
 import * as walletSave from './skills/wallet_save.js';
+import * as telegramTest from './skills/telegram_test.js';
 
 const server = new McpServer({
   name: 'polymarket-mcp',
@@ -268,6 +269,17 @@ server.tool(
   polyApprove.schema.shape,
   async (input) => {
     const result = await polyApprove.run(polyApprove.schema.parse(input));
+    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Tool: telegram_test ──────────────────────────────────────────────────────
+server.tool(
+  'telegram_test',
+  'Test kết nối Telegram Bot — gửi tin nhắn thử để xác nhận TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID đang hoạt động.',
+  telegramTest.schema.shape,
+  async (input) => {
+    const result = await telegramTest.run(telegramTest.schema.parse(input));
     return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
   }
 );

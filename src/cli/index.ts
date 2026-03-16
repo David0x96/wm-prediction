@@ -11,6 +11,8 @@ import * as getWhalesSkill from '../skills/get_whales.js';
 import * as searchMarketsSkill from '../skills/search_markets.js';
 import * as alertSkill from '../skills/alert.js';
 import type { AlertResult } from '../skills/alert.js';
+import { loadTelegramConfig } from '../telegram/client.js';
+import type { TelegramConfig } from '../telegram/client.js';
 
 import {
   printMarkets,
@@ -166,6 +168,9 @@ program
   .option('--above <n>', 'Alert khi YES probability vượt N% (vd: 70)')
   .option('--below <n>', 'Alert khi YES probability xuống dưới N% (vd: 30)')
   .option('--once', 'Dừng sau lần alert đầu tiên')
+  .option('--telegram', 'Gửi alert qua Telegram (cần TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID trong .env)')
+  .option('--tg-token <token>', 'Telegram Bot Token (ghi đè .env)')
+  .option('--tg-chat <id>', 'Telegram Chat ID (ghi đè .env)')
   .action(async (slug, opts) => {
     if (!opts.above && !opts.below) {
       console.error(chalk.red('Cần ít nhất --above hoặc --below'));
@@ -175,11 +180,25 @@ program
     const above = opts.above ? parseFloat(opts.above) / 100 : undefined;
     const below = opts.below ? parseFloat(opts.below) / 100 : undefined;
 
+    // Telegram config
+    let telegram: TelegramConfig | undefined;
+    if (opts.telegram || opts.tgToken || opts.tgChat) {
+      const token = opts.tgToken ?? process.env.TELEGRAM_BOT_TOKEN;
+      const chatId = opts.tgChat ?? process.env.TELEGRAM_CHAT_ID;
+      if (!token) { console.error(chalk.red('Telegram: cần --tg-token hoặc TELEGRAM_BOT_TOKEN trong .env')); process.exit(1); }
+      if (!chatId) { console.error(chalk.red('Telegram: cần --tg-chat hoặc TELEGRAM_CHAT_ID trong .env')); process.exit(1); }
+      telegram = { token, chatId };
+    } else {
+      // Tự detect nếu .env có sẵn
+      telegram = loadTelegramConfig() ?? undefined;
+    }
+
     console.log(chalk.bold.blue('\nAlert Setup'));
     console.log(chalk.gray('─'.repeat(50)));
     console.log(chalk.white(`Market: ${slug}`));
     if (above !== undefined) console.log(chalk.green(`▲ Alert when YES ≥ ${(above * 100).toFixed(1)}%`));
     if (below !== undefined) console.log(chalk.red(`▼ Alert when YES ≤ ${(below * 100).toFixed(1)}%`));
+    if (telegram) console.log(chalk.cyan(`📱 Telegram alerts: chat ${telegram.chatId}`));
     console.log(chalk.gray('Press Ctrl+C to stop\n'));
 
     let stop: (() => void) | null = null;
@@ -192,6 +211,7 @@ program
       console.log(chalk.white(result.question));
       console.log(`   YES probability: ${chalk.bold(pct + '%')} (threshold: ${threshold}%)`);
       console.log(chalk.gray(`   Time: ${new Date(result.timestamp).toLocaleString()}`));
+      if (telegram) console.log(chalk.cyan('   📱 Đã gửi Telegram'));
       if (opts.once && stop) {
         stop();
         process.exit(0);
@@ -201,7 +221,8 @@ program
     try {
       stop = await alertSkill.runInteractive(
         { market_slug: slug, above, below, once: !!opts.once },
-        onAlert
+        onAlert,
+        telegram,
       );
     } catch (err) {
       console.error(chalk.red(`Error: ${(err as Error).message}`));
